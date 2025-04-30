@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 N_SERVEURS = 12
 QUEUE_SIZE = 100
 C_VALUES = [1, 2, 3, 6]
-#LAMBDA_VALUES = np.linspace(0.1, 2, 10)  # Valeurs de lambda à tester
+LAMBDA_VALUES = np.linspace(0.1, 2, 10)  # Valeurs de lambda à tester
 LAMBDA_VALUES = np.linspace(0.1, 5, 15)  # Plage de λ pertinente avec 15 points
 
 SIMULATION_TIME = 10000  # Temps total de simulation
@@ -252,8 +252,8 @@ def find_optimal_C_for_all_lambdas():
 
 
 #Appeler la fonction pour tracer les graphiques
-plot_response_time()
-plot_loss_rate()
+#plot_response_time()
+#plot_loss_rate()
 
 # Appeler la fonction pour déterminer le choix optimal pour λ = 1
 find_optimal_C_for_lambda_1()
