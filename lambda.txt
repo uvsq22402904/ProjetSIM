@@ -1,0 +1,130 @@
+Pour C = 1, le taux de perte dépasse 5% à partir de λ ≈ 2.55
+Pour C = 2, le taux de perte dépasse 5% à partir de λ ≈ 3.60
+Pour C = 3, le taux de perte dépasse 5% à partir de λ ≈ 4.30
+Pour C = 6, le taux de perte dépasse 5% à partir de λ ≈ 3.60
+Résultats pour λ = 1 :
+C = 1 : Temps de réponse moyen (W) = 5.01, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.23, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.48, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.04, Taux de perte = 0.00%
+
+Le choix optimal de C pour λ = 1 est C = 6 avec un temps de réponse moyen de 2.04.
+
+Résultats pour λ = 0.10 :
+C = 1 : Temps de réponse moyen (W) = 4.97, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.31, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.66, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.22, Taux de perte = 0.00%
+Choix optimal pour λ = 0.10 : C = 6 avec W = 2.22
+
+Résultats pour λ = 0.45 :
+C = 1 : Temps de réponse moyen (W) = 5.01, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.29, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.56, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.13, Taux de perte = 0.00%
+Choix optimal pour λ = 0.45 : C = 6 avec W = 2.13
+
+Résultats pour λ = 0.80 :
+C = 1 : Temps de réponse moyen (W) = 5.03, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.26, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.51, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.06, Taux de perte = 0.00%
+Choix optimal pour λ = 0.80 : C = 6 avec W = 2.06
+
+Résultats pour λ = 1.15 :
+C = 1 : Temps de réponse moyen (W) = 4.98, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.22, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.47, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.02, Taux de perte = 0.00%
+Choix optimal pour λ = 1.15 : C = 6 avec W = 2.02
+
+Résultats pour λ = 1.50 :
+C = 1 : Temps de réponse moyen (W) = 5.09, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.23, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.43, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.04, Taux de perte = 0.00%
+Choix optimal pour λ = 1.50 : C = 6 avec W = 2.04
+
+Résultats pour λ = 1.85 :
+C = 1 : Temps de réponse moyen (W) = 5.62, Taux de perte = 0.00%
+C = 2 : Temps de réponse moyen (W) = 3.26, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.44, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.13, Taux de perte = 0.00%
+Choix optimal pour λ = 1.85 : C = 6 avec W = 2.13
+
+Résultats pour λ = 2.20 :
+C = 1 : Temps de réponse moyen (W) = 8.57, Taux de perte = 0.01%
+C = 2 : Temps de réponse moyen (W) = 3.38, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.48, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.32, Taux de perte = 0.00%
+Choix optimal pour λ = 2.20 : C = 6 avec W = 2.32
+
+Résultats pour λ = 2.55 :
+C = 1 : Temps de réponse moyen (W) = 38.59, Taux de perte = 5.63%
+C = 2 : Temps de réponse moyen (W) = 3.75, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.60, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 2.77, Taux de perte = 0.00%
+Choix optimal pour λ = 2.55 : C = 3 avec W = 2.60
+
+Résultats pour λ = 2.90 :
+C = 1 : Temps de réponse moyen (W) = 43.91, Taux de perte = 16.81%
+C = 2 : Temps de réponse moyen (W) = 4.96, Taux de perte = 0.00%
+C = 3 : Temps de réponse moyen (W) = 2.86, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 3.84, Taux de perte = 0.00%
+Choix optimal pour λ = 2.90 : C = 3 avec W = 2.86
+
+Résultats pour λ = 3.25 :
+C = 1 : Temps de réponse moyen (W) = 44.92, Taux de perte = 25.78%
+C = 2 : Temps de réponse moyen (W) = 15.46, Taux de perte = 0.63%
+C = 3 : Temps de réponse moyen (W) = 3.47, Taux de perte = 0.00%
+C = 6 : Temps de réponse moyen (W) = 10.24, Taux de perte = 0.24%
+Choix optimal pour λ = 3.25 : C = 3 avec W = 3.47
+
+Résultats pour λ = 3.60 :
+C = 1 : Temps de réponse moyen (W) = 45.52, Taux de perte = 33.17%
+C = 2 : Temps de réponse moyen (W) = 29.03, Taux de perte = 8.24%
+C = 3 : Temps de réponse moyen (W) = 5.87, Taux de perte = 0.01%
+C = 6 : Temps de réponse moyen (W) = 24.95, Taux de perte = 6.77%
+Choix optimal pour λ = 3.60 : C = 3 avec W = 5.87
+
+Résultats pour λ = 3.95 :
+C = 1 : Temps de réponse moyen (W) = 45.83, Taux de perte = 39.22%
+C = 2 : Temps de réponse moyen (W) = 31.19, Taux de perte = 16.27%
+C = 3 : Temps de réponse moyen (W) = 18.63, Taux de perte = 2.81%
+C = 6 : Temps de réponse moyen (W) = 28.72, Taux de perte = 15.38%
+Choix optimal pour λ = 3.95 : C = 3 avec W = 18.63
+
+Résultats pour λ = 4.30 :
+C = 1 : Temps de réponse moyen (W) = 45.80, Taux de perte = 43.99%
+C = 2 : Temps de réponse moyen (W) = 31.74, Taux de perte = 22.81%
+C = 3 : Temps de réponse moyen (W) = 24.62, Taux de perte = 9.85%
+C = 6 : Temps de réponse moyen (W) = 29.86, Taux de perte = 22.71%
+Aucun choix de C ne satisfait les critères pour λ = 4.30
+
+Résultats pour λ = 4.65 :
+C = 1 : Temps de réponse moyen (W) = 45.91, Taux de perte = 48.23%
+C = 2 : Temps de réponse moyen (W) = 32.18, Taux de perte = 28.98%
+C = 3 : Temps de réponse moyen (W) = 26.24, Taux de perte = 17.13%
+C = 6 : Temps de réponse moyen (W) = 30.65, Taux de perte = 29.20%
+Aucun choix de C ne satisfait les critères pour λ = 4.65
+
+Résultats pour λ = 5.00 :
+C = 1 : Temps de réponse moyen (W) = 45.86, Taux de perte = 51.60%
+C = 2 : Temps de réponse moyen (W) = 32.19, Taux de perte = 33.50%
+C = 3 : Temps de réponse moyen (W) = 26.94, Taux de perte = 23.28%
+C = 6 : Temps de réponse moyen (W) = 30.90, Taux de perte = 34.11%
+Aucun choix de C ne satisfait les critères pour λ = 5.00
+
+Résumé des choix optimaux :
+λ = 0.10 : C optimal = 6, Temps de réponse moyen (W) = 2.22
+λ = 0.45 : C optimal = 6, Temps de réponse moyen (W) = 2.13
+λ = 0.80 : C optimal = 6, Temps de réponse moyen (W) = 2.06
+λ = 1.15 : C optimal = 6, Temps de réponse moyen (W) = 2.02
+λ = 1.50 : C optimal = 6, Temps de réponse moyen (W) = 2.04
+λ = 1.85 : C optimal = 6, Temps de réponse moyen (W) = 2.13
+λ = 2.20 : C optimal = 6, Temps de réponse moyen (W) = 2.32
+λ = 2.55 : C optimal = 3, Temps de réponse moyen (W) = 2.60
+λ = 2.90 : C optimal = 3, Temps de réponse moyen (W) = 2.86
+λ = 3.25 : C optimal = 3, Temps de réponse moyen (W) = 3.47
+λ = 3.60 : C optimal = 3, Temps de réponse moyen (W) = 5.87
+λ = 3.95 : C optimal = 3, Temps de réponse moyen (W) = 18.63
