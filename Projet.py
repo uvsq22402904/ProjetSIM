@@ -75,7 +75,7 @@ def confidence_interval(data):
         return 0, 0
     mean = moyenne(data)
     v = variance(data)
-    margin = 1.96 * (v / len(data)) ** 0.5  # Marge d'erreur
+    margin = CONFIDENCE_LEVEL * (v / len(data)) ** 0.5  # Marge d'erreur
     return mean, margin
 
 def simulate(C, lmbda):
