@@ -1,16 +1,14 @@
 import heapq
 import numpy as np
 import matplotlib.pyplot as plt
-import heapq
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 # Paramètres globaux
 N_SERVEURS = 12
 QUEUE_SIZE = 100
 C_VALUES = [1, 2, 3, 6]
 LAMBDA_VALUES = np.arange(0.1, 6, 0.35)
-SIMULATION_TIME = 1000
+SIMULATION_TIME = 1000  # Augmenter pour meilleure stabilité
 
 def exp_rnd(lmbda):
     return np.random.exponential(1 / lmbda)
@@ -34,7 +32,7 @@ class Routeur:
         self.servers = {i: [Serveur() for _ in range(N_SERVEURS // C)] for i in range(C)}
         self.waiting = {i: [] for i in range(C)}
         self.loss_count = 0
-        self.response_times = []  # Suivi des temps de réponse
+        self.completed = 0  # Compteur de requêtes complétées
 
     def receive_request(self, event_queue, now, request):
         if len(self.queue) < self.capacity:
@@ -68,14 +66,14 @@ class Routeur:
                 srv.end_time = now + service_time
                 heapq.heappush(event_queue, (srv.end_time, 'end_service', srv, group, request))
                 return
-        max_waiting_per_group = max(1, QUEUE_SIZE // self.C)  # Limite stricte
+        max_waiting_per_group = max(1, QUEUE_SIZE // self.C)
         if len(self.waiting[group]) < max_waiting_per_group:
             self.waiting[group].append(request)
         else:
             self.loss_count += 1
 
     def end_service(self, event_queue, now, server, group, request):
-        self.response_times.append(now - request.time)  # Enregistrer le temps de réponse
+        self.completed += 1
         server.busy = False
         if self.waiting[group]:
             req = self.waiting[group].pop(0)
@@ -91,7 +89,6 @@ def simulate(C, lmbda):
     now = 0
     last = 0
     request_count = 0
-    accepted = 0
     total_weighted = 0
 
     heapq.heappush(event_queue, (exp_rnd(lmbda), 'arrival'))
@@ -102,7 +99,6 @@ def simulate(C, lmbda):
         event = event_tuple[1]
         args = event_tuple[2:]
 
-        # Calcul de L (inclure waiting)
         busy = sum(srv.busy for grp in routeur.servers.values() for srv in grp)
         waiting_count = sum(len(routeur.waiting[grp]) for grp in routeur.waiting)
         total_weighted += (busy + len(routeur.queue) + waiting_count) * (now - last)
@@ -115,8 +111,6 @@ def simulate(C, lmbda):
             routeur.receive_request(event_queue, now, req)
             heapq.heappush(event_queue, (now + exp_rnd(lmbda), 'arrival'))
             request_count += 1
-            if routeur.loss_count == prev_loss:
-                accepted += 1
 
         elif event == 'end_routing':
             routeur.end_routing(event_queue, now)
@@ -126,7 +120,9 @@ def simulate(C, lmbda):
             routeur.end_service(event_queue, now, srv, grp, req)
 
     total_time = now
-    W = np.mean(routeur.response_times) if routeur.response_times else float('inf')
+    L = total_weighted / total_time if total_time else 0
+    lambda_eff = routeur.completed / total_time if total_time else 0
+    W = L / lambda_eff if lambda_eff else float('inf')
     loss_rate = routeur.loss_count / request_count if request_count else 0
     return W, loss_rate
 
