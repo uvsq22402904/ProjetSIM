@@ -1,5 +1,5 @@
 Simulation de Routeur avec Groupes de Serveurs
-Ce projet implémente une simulation à événements discrets d'un système de routage avec plusieurs groupes de serveurs. Il analyse l'impact du nombre de groupes (C) sur les performances d'un système distribué sous différentes charges de travail (λ), en cherchant à identifier les configurations optimales qui minimisent le temps de réponse tout en maintenant un taux de perte de requêtes inférieur à 5%.
+Ce projet implémente une simulation à événements discrets d'un système de routage avec plusieurs groupes de serveurs. Il analyse l'impact du nombre de groupes (C) sur les performances d'un système distribué sous différentes charges de travail (λ), en cherchant à identifier les configurations optimales qui minimisent le temps de réponse moyen (W) tout en maintenant un taux de perte de requêtes inférieur à 5%.
 Description du Projet
 Le projet simule un routeur recevant des requêtes et les distribuant vers des groupes de serveurs. Les paramètres clés sont :
 
@@ -32,10 +32,10 @@ python -m venv envPRO
 
 Activer l'environnement virtuel
 
-Windows :envPRO\Scripts\activate
+Windows:envPRO\Scripts\activate
 
 
-Mac/Linux :source envPRO/bin/activate
+Mac/Linux:source envPRO/bin/activate
 
 
 
@@ -43,64 +43,48 @@ Installer les dépendances
 Installez les dépendances listées dans requirements.txt :
 pip install -r requirements.txt
 
-Ou, cloner le dépôt :
-git clone https://github.com/username/router-simulation.git
-cd router-simulation
-pip install -r requirements.txt
 
 Dépendances
 Les dépendances sont spécifiées dans le fichier requirements.txt et incluent :
 
-NumPy : Génération de nombres aléatoires et calculs.
-Matplotlib : Visualisation des résultats.
-heapq : Gestion de la file d'événements (bibliothèque standard).
+NumPy: Génération de nombres aléatoires et calculs.
+Matplotlib: Visualisation des résultats.
+heapq: Gestion de la file d'événements (bibliothèque standard).
 
 Usage
 Exécutez la simulation complète pour générer les graphiques et résultats :
-python simulation.py
+python Projet.py
 
-Pour une simulation spécifique :
-from simulation import simulate, confidence_interval
-
-# Simuler avec C=3, λ=1.5
-W, loss_rate = simulate(C=3, lmbda=1.5)
-print(f"Temps de réponse moyen: {W:.2f}")
-print(f"Taux de perte: {loss_rate:.2%}")
-
-# Intervalle de confiance
-W_values = [simulate(C=3, lmbda=1.5)[0] for _ in range(10)]
-mean_W, margin = confidence_interval(W_values)
-print(f"Temps de réponse moyen: {mean_W:.2f} ± {margin:.2f}")
 
 Description des Fonctions
 1. exp_rnd(lmbda)
 Génère une variable aléatoire exponentielle avec taux lmbda.
-2. Classe Requete
+1. Classe Requete
 Représente une requête avec :
 
-time : Temps d'arrivée.
-category : Groupe de serveurs cible.
+time: Temps d'arrivée.
+category: Groupe de serveurs cible.
 
 3. Classe Serveur
 Représente un serveur avec :
 
-busy : État (occupé/libre).
-end_time : Fin du traitement en cours.
+busy: État (occupé/libre).
+end_time: Fin du traitement en cours.
 
 4. Classe Routeur
 Gère la file d'attente et le routage avec :
 
-C : Nombre de groupes.
-queue : File FIFO (capacité 100).
-servers : Dictionnaire des serveurs par groupe.
-waiting : Files d'attente par groupe.
-loss_count : Requêtes perdues.
-response_times : Temps de réponse des requêtes.
+C: Nombre de groupes.
+queue: File FIFO (capacité 100).
+servers: Dictionnaire des serveurs par groupe.
+waiting: Files d'attente par groupe.
+loss_count: Requêtes perdues.
+completed: Requêtes complétées.
 Méthodes :
-receive_request : Accepte ou rejette une requête.
-start_routing/end_routing : Gère le routage.
-dispatch_to_server : Assigne une requête à un serveur.
-end_service : Termine un service et traite les requêtes en attente.
+receive_request: Accepte ou rejette une requête.
+start_routing/end_routing: Gère le routage.
+dispatch_to_server: Assigne une requête à un serveur.
+end_service: Termine un service et traite les requêtes en attente.
 
 
 
@@ -113,14 +97,14 @@ Calcule la moyenne et la marge d'erreur (intervalle de confiance à 95%).
 8. simulate(C, lmbda)
 Simule le système pour un C et λ donnés, renvoyant :
 
-W : Temps de réponse moyen.
-loss_rate : Taux de perte.
+W: Temps de réponse moyen (calculé via la loi de Little).
+loss_rate: Taux de perte.
 
 9. run_all_simulations()
 Exécute les simulations pour tous les C et λ, renvoyant :
 
-results : Métriques (W, taux de perte, marges).
-lambda_limits : Valeurs de λ où le taux de perte dépasse 5%.
+results: Métriques (W, taux de perte, marges).
+lambda_limits: Valeurs de λ où le taux de perte dépasse 5%.
 
 10. plot_response_time(results)
 Trace le temps de réponse moyen (W) vs λ pour chaque C, avec barres d'erreur.
@@ -132,47 +116,50 @@ Identifie le C optimal pour λ=1 (minimise W, taux de perte ≤ 5%).
 Détermine le C optimal pour chaque λ, avec résumé des résultats.
 Architecture du Code
 
-Requete : Structure une requête.
-Serveur : Gère l'état d'un serveur.
-Routeur : Orchestre le routage et la gestion des files.
-Simulation : Logique à événements discrets.
-Analyse : Calcul des métriques et visualisation.
+Requete: Structure une requête.
+Serveur: Gère l'état d'un serveur.
+Routeur: Orchestre le routage et la gestion des files.
+Simulation: Logique à événements discrets.
+Analyse: Calcul des métriques et visualisation.
 
 Métriques et Analyse
 Temps de Réponse Moyen (W)
-Temps total passé par une requête dans le système (file + service). Calculé comme la moyenne des temps de réponse enregistrés.
+Temps total passé par une requête dans le système (file + service). Dans cette simulation, W est calculé en utilisant la loi de Little : W = L / λ_eff, où :
+
+L est le nombre moyen de requêtes dans le système, calculé via une somme pondérée des requêtes en file, en attente, et en service.
+λ_eff est le taux d'arrivée effectif, basé sur le nombre de requêtes complétées par unité de temps.
+
 Taux de Perte
 Proportion de requêtes rejetées (file pleine ou file de groupe saturée).
 Intervalle de Confiance
 10 exécutions par configuration pour calculer des intervalles de confiance à 95%, assurant la robustesse des résultats.
+
 Résultats
-1. Temps de Réponse Moyen
 
-Faibles λ : C=6 minimise W grâce au parallélisme.
-Moyennes λ : C=3 devient optimal, équilibrant parallélisme et efficacité.
-Hautes λ : W augmente rapidement pour tous les C.
+1. Configuration Optimale
+Pour chaque valeur de λ, la configuration optimale est celle qui minimise W tout en maintenant un taux de perte inférieur à 5%. Les résultats montrent que :
 
-2. Taux de Perte
-
-C=1 : Perte > 5% dès λ ≈ 2.5.
-C=2 : Perte > 5% à λ ≈ 3.6.
-C=3 : Perte > 5% à λ ≈ 4.0.
-C=6 : Perte > 5% à λ ≈ 3.6.
-
-3. Configuration Optimale
-
-λ < 2.55 : C=6 (meilleur parallélisme).
-2.55 ≤ λ < 4.0 : C=3 (équilibre efficacité/parallélisme).
-λ ≥ 4.0 : Aucun C ne maintient un taux de perte < 5%.
+λ = 0.10 : C=6 (W = 2.37).
+λ = 0.45 : C=6 (W = 2.53).
+λ = 0.80 : C=3 (W = 2.98).
+λ = 1.15 : C=3 (W = 3.69).
+λ = 1.50 : C=2 (W = 4.16).
+λ = 1.85 : C=1 (W = 5.57).
+λ = 2.20 : C=1 (W = 9.28).
+λ = 2.55 : C=1 (W = 30.13).
+λ ≥ 2.90 : Aucun C ne maintient un taux de perte < 5%.
 
 Analyse des Résultats
 
-Faibles charges : C=6 excelle grâce à une distribution fine des requêtes.
-Charges moyennes : C=3 optimise l'efficacité des serveurs.
-Charges élevées : Le système sature, nécessitant une capacité accrue.
+Faibles charges (λ < 0.80) : C=6 est optimal, offrant les temps de réponse les plus bas (autour de 2.5 unités), grâce à un parallélisme élevé.
+Charges faibles à moyennes (0.80 ≤ λ < 1.50) : C=3 devient optimal, équilibrant parallélisme et efficacité, avec des temps de réponse autour de 3 à 4 unités.
+Charges moyennes (1.50 ≤ λ < 1.85) : C=2 prend l'avantage, avec un W d’environ 4.16 à λ = 1.50.
+Charges modérées (1.85 ≤ λ < 2.90) : C=1 devient la meilleure option, car les autres configurations dépassent un taux de perte de 5%, avec W augmentant de 5.57 à 30.13.
+Charges élevées (λ ≥ 2.90) : Aucune configuration ne maintient un taux de perte inférieur à 5%, et W devient très élevé pour tous les C.
 
+Ces transitions montrent un équilibre entre la distribution des requêtes (favorisée par un C élevé) et l'efficacité des ressources (favorisée par un C plus faible).
 Conclusions
-Le choix de C dépend fortement de λ. Une configuration dynamique ajustant C en fonction de la charge pourrait optimiser les performances. La simulation souligne l'importance de l'équilibre entre parallélisme et efficacité dans les systèmes distribués.
+Le choix de C dépend fortement de λ. Pour les faibles charges, un C élevé (comme 6) est préférable pour minimiser W. À mesure que λ augmente, des valeurs de C plus faibles (comme 3, puis 2, et enfin 1) deviennent plus adaptées pour maintenir des performances acceptables. Une configuration dynamique ajustant C en fonction de la charge pourrait optimiser les performances. La simulation souligne l'importance de l'équilibre entre parallélisme et efficacité dans les systèmes distribués.
 Auteurs
 
 Arris Yanis
@@ -183,4 +170,5 @@ Références
 Théorie des files d'attente
 Simulation à événements discrets
 Loi exponentielle
+Loi de Little
 
