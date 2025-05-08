@@ -8,7 +8,7 @@ N_SERVEURS = 12
 QUEUE_SIZE = 100
 C_VALUES = [1, 2, 3, 6]
 LAMBDA_VALUES = np.arange(0.1, 6, 0.35)
-SIMULATION_TIME = 1000  
+SIMULATION_TIME = 10000
 
 def exp_rnd(lmbda):
     return np.random.exponential(1 / lmbda)
