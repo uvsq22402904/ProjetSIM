@@ -8,7 +8,8 @@ N_SERVEURS = 12
 QUEUE_SIZE = 100
 C_VALUES = [1, 2, 3, 6]
 LAMBDA_VALUES = np.arange(0.1, 6, 0.35)
-SIMULATION_TIME = 10000
+SIMULATION_TIME = 1000
+
 
 def exp_rnd(lmbda):
     return np.random.exponential(1 / lmbda)
@@ -30,20 +31,21 @@ class Routeur:
         self.capacity = QUEUE_SIZE
         self.busy = False
         self.servers = {i: [Serveur() for _ in range(N_SERVEURS // C)] for i in range(C)}
-        self.waiting = {i: [] for i in range(C)}
         self.loss_count = 0
         self.completed = 0  # Compteur de requêtes complétées
+        self.queue_blocked = False  # Indique si la file est bloquée en attente d'un serveur
+        self.waiting_category = None  # Catégorie pour laquelle on attend un serveur libre
 
     def receive_request(self, event_queue, now, request):
         if len(self.queue) < self.capacity:
             self.queue.append(request)
-            if not self.busy:
+            if not self.busy and not self.queue_blocked:
                 self.start_routing(event_queue, now)
         else:
             self.loss_count += 1
 
     def start_routing(self, event_queue, now):
-        if self.queue:
+        if self.queue and not self.queue_blocked:
             self.busy = True
             delay = (self.C - 1) / self.C
             heapq.heappush(event_queue, (now + delay, 'end_routing'))
@@ -51,13 +53,24 @@ class Routeur:
     def end_routing(self, event_queue, now):
         self.busy = False
         request = self.queue.pop(0)
-        self.dispatch_to_server(event_queue, now, request)
-        if self.queue:
-            self.start_routing(event_queue, now)
+        
+        # Essayer de dispatcher la requête vers un serveur libre
+        if self.dispatch_to_server(event_queue, now, request):
+            # Si dispatch réussi et file pas bloquée, continuer avec la prochaine requête
+            if self.queue and not self.queue_blocked:
+                self.start_routing(event_queue, now)
+        else:
+            # Si pas de serveur disponible, bloquer la file et mettre la requête en attente
+            self.queue_blocked = True
+            self.waiting_category = request.category
+            # Remettre la requête en tête de file
+            self.queue.insert(0, request)
 
     def dispatch_to_server(self, event_queue, now, request):
         group = request.category
         servers = self.servers[group]
+        
+        # Chercher un serveur libre dans le groupe correspondant
         for srv in servers:
             if not srv.busy:
                 srv.busy = True
@@ -65,23 +78,43 @@ class Routeur:
                 service_time = exp_rnd(rate)
                 srv.end_time = now + service_time
                 heapq.heappush(event_queue, (srv.end_time, 'end_service', srv, group, request))
-                return
-        max_waiting_per_group = max(1, QUEUE_SIZE // self.C)
-        if len(self.waiting[group]) < max_waiting_per_group:
-            self.waiting[group].append(request)
-        else:
-            self.loss_count += 1
+                return True  # Dispatch réussi
+                
+        return False  # Pas de serveur disponible
 
     def end_service(self, event_queue, now, server, group, request):
         self.completed += 1
         server.busy = False
-        if self.waiting[group]:
-            req = self.waiting[group].pop(0)
-            server.busy = True
-            rate = {1: 4/20, 2: 7/20, 3: 10/20, 6: 14/20}[self.C]
-            service_time = exp_rnd(rate)
-            server.end_time = now + service_time
-            heapq.heappush(event_queue, (server.end_time, 'end_service', server, group, req))
+        
+        # Si la file était bloquée en attente de ce groupe de serveurs
+        if self.queue_blocked and self.waiting_category == group:
+            # Essayer de traiter la requête en attente
+            if self.queue:
+                req = self.queue[0]
+                if req.category == group and self.dispatch_to_server(event_queue, now, req):
+                    # Requête traitée, la retirer de la file
+                    self.queue.pop(0)
+                    
+                    # Si la file n'est plus vide, vérifier si on peut continuer à router
+                    if self.queue:
+                        # Vérifier si la prochaine requête est pour un groupe disponible
+                        next_req = self.queue[0]
+                        can_process = False
+                        for srv in self.servers[next_req.category]:
+                            if not srv.busy:
+                                can_process = True
+                                break
+                        
+                        if can_process:
+                            # Débloquer la file et commencer à router
+                            self.queue_blocked = False
+                            self.waiting_category = None
+                            if not self.busy:
+                                self.start_routing(event_queue, now)
+                    else:
+                        # File vide, débloquer
+                        self.queue_blocked = False
+                        self.waiting_category = None
 
 def simulate(C, lmbda):
     event_queue = []
@@ -99,15 +132,14 @@ def simulate(C, lmbda):
         event = event_tuple[1]
         args = event_tuple[2:]
 
+        # Calcul des statistiques
         busy = sum(srv.busy for grp in routeur.servers.values() for srv in grp)
-        waiting_count = sum(len(routeur.waiting[grp]) for grp in routeur.waiting)
-        total_weighted += (busy + len(routeur.queue) + waiting_count) * (now - last)
+        total_weighted += (busy + len(routeur.queue)) * (now - last)
         last = now
 
         if event == 'arrival':
             category = np.random.randint(0, C)
             req = Requete(now, category)
-            prev_loss = routeur.loss_count
             routeur.receive_request(event_queue, now, req)
             heapq.heappush(event_queue, (now + exp_rnd(lmbda), 'arrival'))
             request_count += 1
@@ -125,7 +157,6 @@ def simulate(C, lmbda):
     W = L / lambda_eff if lambda_eff else float('inf')
     loss_rate = routeur.loss_count / request_count if request_count else 0
     return W, loss_rate
-
 
 def moyenne(data):
     """ calcule la moyenne de la liste data """
@@ -164,7 +195,6 @@ def run_all_simulations():
                 lambda_limits[C] = lmbda
     return results, lambda_limits
 
-
 def plot_response_time(results):
     plt.figure(figsize=(10, 6))
     for C in C_VALUES:
@@ -185,8 +215,8 @@ def plot_loss_rate(results, lambda_limits):
     plt.figure(figsize=(10, 6))
     for C in C_VALUES:
         lambdas = [x[0] for x in results[C]]
-        mean_losses = [x[3] for x in results[C]]  # Mean loss rate (corrected)
-        margins = [x[4] for x in results[C]]      # Margin for loss rate (corrected)
+        mean_losses = [x[3] for x in results[C]]  # Mean loss rate
+        margins = [x[4] for x in results[C]]      # Margin for loss rate
         plt.errorbar(lambdas, mean_losses, yerr=margins, label=f'C = {C}', capsize=5)
     plt.xlabel('λ (Taux d\'arrivée)')
     plt.ylabel('Taux de perte des requêtes')
@@ -262,28 +292,14 @@ def find_optimal_C_for_all_lambdas(results, lambda_limits):
     return optimal_choices
 
 
+if __name__ == "__main__":
+    results, lambda_limits = run_all_simulations()
+    plot_response_time(results)
+    plot_loss_rate(results, lambda_limits)
+    find_optimal_C_for_lambda_1(results)
+    optimal_Cs = find_optimal_C_for_all_lambdas(results, lambda_limits)
 
-
-
-
-
-
-
-
-
-
-
-
-
-results, lambda_limits = run_all_simulations()
-plot_response_time(results)
-plot_loss_rate(results, lambda_limits)
-find_optimal_C_for_lambda_1(results)
-optimal_Cs = find_optimal_C_for_all_lambdas(results, lambda_limits)
-
-# Afficher les résultats finaux
-print("\nRésumé des choix optimaux :")
-for lmbda, (C, W) in optimal_Cs.items():
-    print(f"λ = {lmbda:.2f} : C optimal = {C}, Temps de réponse moyen (W) = {W:.2f}")
-
-
+    # Afficher les résultats finaux
+    print("\nRésumé des choix optimaux :")
+    for lmbda, (C, W) in sorted(optimal_Cs.items()):
+        print(f"λ = {lmbda:.2f} : C optimal = {C}, Temps de réponse moyen (W) = {W:.2f}")
